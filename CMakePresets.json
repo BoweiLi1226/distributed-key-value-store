@@ -9,12 +9,11 @@
         {
             "name": "default",
             "hidden": false,
-            "description": "Build with Ninja and vcpkg toolchain",
+            "description": "Build with Ninja",
             "generator": "Ninja",
             "binaryDir": "${sourceDir}/build",
             "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Release",
-                "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/external/vcpkg/scripts/buildsystems/vcpkg.cmake"
+                "CMAKE_BUILD_TYPE": "Release"
             }
 
         }

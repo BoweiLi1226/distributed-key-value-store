@@ -1,16 +1,32 @@
 cmake_minimum_required(VERSION 4.2.0)
 
-project(distributed_key_value_store LANGUAGES CXX)
+project(distributed-key-value-store LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+# CPM.cmake
+file(
+    DOWNLOAD
+    https://github.com/cpm-cmake/CPM.cmake/releases/download/v0.40.2/CPM.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/cmake/CPM.cmake
+    EXPECTED_HASH SHA256=c8cdc32c03816538ce22781ed72964dc864b2a34a310d3b7104812a5ca2d835d
+)
+include(${CMAKE_CURRENT_BINARY_DIR}/cmake/CPM.cmake)
+
 # Dependencies
-find_package(GTest CONFIG REQUIRED)
-find_package(Protobuf REQUIRED)
-find_package(Boost REQUIRED COMPONENTS system)
+CPMAddPackage("gh:google/googletest#v1.16.0")
+set(protobuf_BUILD_TESTS OFF)
+CPMAddPackage("gh:protocolbuffers/protobuf#v30.2")
+include(${protobuf_SOURCE_DIR}/cmake/protobuf-generate.cmake)
+set(BOOST_INCLUDE_LIBRARIES system asio)
+CPMAddPackage(
+    NAME Boost
+    VERSION 1.87.0
+    URL https://github.com/boostorg/boost/releases/download/boost-1.87.0/boost-1.87.0-cmake.tar.xz
+)
 
 # Paths
 set(PROTO_DIR "${CMAKE_CURRENT_SOURCE_DIR}/proto")
@@ -41,7 +57,7 @@ add_library(primitives_lib INTERFACE)
 
 target_include_directories(primitives_lib INTERFACE "${INCLUDE_DIR}")
 
-target_link_libraries(primitives_lib INTERFACE Boost::system)
+target_link_libraries(primitives_lib INTERFACE Boost::system Boost::asio)
 
 add_library(
     kv_store_lib
